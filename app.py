@@ -34,6 +34,7 @@ def tts():
         uuidOne = uuid.uuid1()
         downloadfile = f'{uuidOne}.mp3'
         tts.save(f"{downloadfile}")
+        os.system(f"start {downloadfile}")
         return send_file(f"{downloadfile}"), 200
     except:
         raise
