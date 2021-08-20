@@ -21,5 +21,12 @@ def tts():
     except:
         raise
 
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    try:
+        return 'works'
+    except:
+        raise
+
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
