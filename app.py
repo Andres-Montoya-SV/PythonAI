@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_from_directory
 import os
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS')
+app.config['UPLOAD_FOLDER'] = './'
 db = SQLAlchemy(app)
 
 class Usermessages(db.Model):
@@ -35,7 +36,7 @@ def tts():
         downloadfile = f'{uuidOne}.mp3'
         tts.save(f"{downloadfile}")
         os.system(f"start {downloadfile}")
-        return send_file(f"{downloadfile}"), 200
+        return send_from_directory(app.config['UPLOAD_FOLDER'],downloadfile, as_attachment=True)
     except:
         raise
 
