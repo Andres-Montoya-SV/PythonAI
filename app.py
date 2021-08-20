@@ -1,9 +1,11 @@
 import pyttsx3
 from flask import Flask, request
 import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
+load_dotenv()
 
 @app.route('/')
 def index():
