@@ -2,10 +2,21 @@ import pyttsx3
 from flask import Flask, request
 import os
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
-load_dotenv()
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS')
+db = SQLAlchemy(app)
+
+class Usermessages(db.Model):
+    _id = db.Column('id', db.Integer, primary_key=True)
+    _messages = db.Column(db.String(10000))
+
+    def __init__(self, _messages):
+        self._messages = _messages
 
 @app.route('/')
 def index():
@@ -15,6 +26,9 @@ def index():
 def tts():
     try:
         text = request.json['text']
+        user = Usermessages(_messages=text)
+        db.session.add(user)
+        db.session.commit()
         ttsEngine = pyttsx3.init()
         ttsEngine.setProperty('rate', 150)
         ttsEngine.say(str(text))
@@ -31,4 +45,5 @@ def chatbot():
         raise
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True, port=8000)
