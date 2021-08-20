@@ -1,8 +1,9 @@
-import pyttsx3
-from flask import Flask, request
+from flask import Flask, request, send_file
 import os
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from gtts import gTTS
+import uuid
 
 load_dotenv()
 app = Flask(__name__)
@@ -29,11 +30,11 @@ def tts():
         user = Usermessages(_messages=text)
         db.session.add(user)
         db.session.commit()
-        ttsEngine = pyttsx3.init()
-        ttsEngine.setProperty('rate', 150)
-        ttsEngine.say(str(text))
-        ttsEngine.runAndWait()
-        return f'The app said: {text}', 200
+        tts = gTTS(text)
+        uuidOne = uuid.uuid1()
+        downloadfile = f'{uuidOne}.mp3'
+        tts.save(f"{downloadfile}")
+        return send_file(f"{downloadfile}"), 200
     except:
         raise
 
